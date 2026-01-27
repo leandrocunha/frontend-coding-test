@@ -2,14 +2,23 @@ import React, { useState } from 'react';
 import { Form } from './components/Form/Form.tsx';
 import { Header } from './components/Header/Header.tsx';
 import { Table } from './components/Table/Table.tsx';
+import { Filter } from './components/Filter/Filter.tsx';
 
 import type { Task, TaskPriority } from './types.ts';
+import type { FilterStatus } from './components/Filter/types.ts';
 
 import './App.css.ts'
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [taskTitle, setTaskTitle] = useState<string>('');
+  const [filter, setFilter] = useState<FilterStatus>('all');
+
+  const filteredTasks = tasks.filter((task) => {
+    if (filter === 'completed') return task.completed;
+    if (filter === 'incomplete') return !task.completed;
+    return true;
+  });
 
 
   const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -59,7 +68,8 @@ function App() {
   return (
     <>
       <Header />
-      <Table tasks={tasks} setTasks={setTasks} handleDeleteTask={handleDeleteTask} />
+      {tasks.length > 0 && <Filter filter={filter} setFilter={setFilter} />}
+      <Table tasks={filteredTasks} setTasks={setTasks} handleDeleteTask={handleDeleteTask} />
       <Form handleOnSubmit={handleOnSubmit} taskTitle={taskTitle} setTaskTitle={setTaskTitle} />
     </>
   )
