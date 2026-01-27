@@ -19,8 +19,10 @@ function App() {
   }
 
   const handleAddTask = (title: string, priority: TaskPriority) => {
+    if (!title.trim()) return;
+
     const newTask: Task = {
-      id: new Date().toISOString(),
+      id: crypto.randomUUID(),
       title,
       priority,
       completed: false,
@@ -31,6 +33,8 @@ function App() {
   };
 
   const handleDeleteTask = (taskId: string) => {
+    if (!confirm('Are you sure you want to delete this task?')) return;
+
     const taskIndex = tasks.findIndex((task: Task) => task.id === taskId);
 
     if (taskIndex === -1) return;
