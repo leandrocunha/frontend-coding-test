@@ -5,7 +5,7 @@ import { Filter } from './Filter';
 describe('Filter', () => {
     it('should render the filter with all options', () => {
         const mockSetFilter = vi.fn();
-        
+
         render(<Filter filter="all" setFilter={mockSetFilter} />);
 
         expect(screen.getByRole('combobox')).toBeInTheDocument();
