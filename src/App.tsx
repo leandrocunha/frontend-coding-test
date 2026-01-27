@@ -1,10 +1,26 @@
 import React, { useState } from 'react';
-import './App.css.ts'
 import type { Task, TaskPriority } from './types.ts';
+
+import * as styles from './App.css.ts'
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [taskTitle, setTaskTitle] = useState<string>('');
+
+  const tasksCompleted = tasks.filter((task) => task.completed);
+
+  const getPriorityClass = (priority: TaskPriority) => {
+    switch (priority) {
+      case 'High':
+        return styles.priorityHigh;
+      case 'Medium':
+        return styles.priorityMedium;
+      case 'Low':
+        return styles.priorityLow;
+      default:
+        return '';
+    }
+  };
 
   const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -58,10 +74,10 @@ function App() {
         tasks.length === 0 ? (
           <p>No tasks found.</p>
         ) : (
-          <table>
+          <table className={styles.table}>
             <thead>
               <tr>
-                <th>Completed</th>
+                <th>Completed {tasksCompleted.length > 0 && `(${tasksCompleted.length})`}</th>
                 <th>Title</th>
                 <th>Priority</th>
                 <th>Actions</th>
@@ -69,14 +85,14 @@ function App() {
             </thead>
             <tbody>
               {tasks.map((task) => (
-                <tr key={task.id}>
-                  <td><input type='checkbox' checked={task.completed} onChange={(e) => {
+                <tr className={getPriorityClass(task.priority)} key={task.id}>
+                  <td className={styles.completedColumn}><input type='checkbox' checked={task.completed} onChange={(e) => {
                     const newTasks = tasks.map((t) =>
                       t.id === task.id ? { ...t, completed: e.target.checked } : t
                     );
                     setTasks(newTasks);
                   }} /></td>
-                  <td>{task.title}</td>
+                  <td className={`${task.completed ? styles.taskCompleted : ''} ${styles.taskTitleColumn}`}>{task.title}</td>
                   <td>
                     <select
                       value={task.priority}
@@ -96,6 +112,12 @@ function App() {
                 </tr>
               ))}
             </tbody>
+            <tfoot>
+              <tr>
+                <td colSpan={3}>Completed Tasks: {tasksCompleted.length}</td>
+                <td colSpan={1}>Total Tasks: {tasks.length}</td>
+              </tr>
+            </tfoot>
           </table>
         )
       }
