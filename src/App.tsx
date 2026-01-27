@@ -1,9 +1,22 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import './App.css.ts'
 import type { Task, TaskPriority } from './types.ts';
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [taskTitle, setTaskTitle] = useState<string>('');
+
+  const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const title = formData.get('taskTitle') as string;
+    const priority = formData.get('taskPriority') as TaskPriority;
+
+    handleAddTask(title, priority);
+
+    resetForm(e.currentTarget)
+  }
 
   const handleAddTask = (title: string, priority: TaskPriority) => {
     const newTask: Task = {
@@ -27,6 +40,11 @@ function App() {
 
     setTasks(newTasks);
   };
+
+  const resetForm = (form: HTMLFormElement) => {
+    form.reset()
+    setTaskTitle('');
+  }
 
   return (
     <>
@@ -78,7 +96,15 @@ function App() {
         )
       }
 
-      <button onClick={() => handleAddTask(`Task ${tasks.length + 1}`, 'Medium')}>Add Task</button>
+      <form onSubmit={handleOnSubmit}>
+        <input onChange={(e) => setTaskTitle(e.target.value)} type="text" name="taskTitle" placeholder="Task Title" value={taskTitle} required />
+        <select name="taskPriority" defaultValue="Medium">
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+        <button type="submit">Add Task</button>
+      </form>
     </>
   )
 }
